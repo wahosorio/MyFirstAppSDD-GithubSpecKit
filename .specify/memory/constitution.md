@@ -1,50 +1,50 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!--
+Sync Impact Report
+- Version change: none → 1.0.0
+- Modified principles: Placeholder template → Training Transparency; Secure-by-Design Training; Spec-Driven Development; Minimal Complexity; Testable Delivery
+- Added sections: Project Constraints; Development Workflow
+- Removed sections: placeholder tokens only
+- Templates requiring updates: .specify/templates/plan-template.md ✅ unchanged; .specify/templates/spec-template.md ✅ unchanged; .specify/templates/tasks-template.md ✅ unchanged
+- Follow-up TODOs: none
+-->
+
+# MyFirstAppSDD-GithubSpecKit Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Training Transparency
+All project documentation, README content, and feature notes MUST explicitly state that this repository is a training-focused application, not a production system. This principle protects learners from assuming the implementation is production-grade and preserves the educational intent of the codebase.
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### II. Secure-by-Design Training
+The repository MUST use secure practices appropriate for learning: simplified or mock implementations are permitted only when isolated, labeled clearly, and accompanied by a production-safe migration note. This keeps the training code honest while still teaching sound security concepts.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### III. Spec-Driven Development
+Every feature MUST begin with a written specification containing user scenarios, functional requirements, and measurable success criteria before implementation begins. This ensures work is grounded in user value and makes review, testing, and scope decisions explicit.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### IV. Minimal Complexity
+Architecture and implementation MUST favor simplicity and separation of concerns. Avoid additional layers, services, or abstractions unless they directly support the current training objectives, because unnecessary complexity harms maintainability and learner comprehension.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### V. Testable Delivery
+Work MUST be organized so each user story can be independently tested, with foundational infrastructure completed before story-specific implementation. This enforces reliable iteration and reduces hidden dependencies across feature work.
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+## Project Constraints
+This repository is designed for local training and demonstration use only. Constraints:
+- The application MUST remain offline-first and avoid external production services unless a migration path is explicitly documented.
+- Mock authentication, demo data, and simplified services MUST be clearly labeled as training-only implementations.
+- Security and privacy considerations MUST be documented even when using simplified solutions.
+- Architecture choices MUST prioritize learner transparency over production optimization.
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
-
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
-
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+## Development Workflow
+- Every feature MUST use `spec.md`, `plan.md`, and `tasks.md` to define scope, design, and execution before code changes begin.
+- PR reviews MUST verify compliance with this constitution and the feature's measurable success criteria.
+- Architecture decisions and tradeoffs MUST be documented in feature plans to support review and future handoff.
+- Tasks MUST be grouped by independent user stories to enable separate implementation and testing.
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
+This constitution is the authoritative source for repository workflow, documentation, and feature discipline. Amendments follow these rules:
+- Changes MUST be documented in the constitution file and require a version update.
+- PR reviewers MUST confirm that proposed amendments improve governance or clarify existing rules.
+- Compliance review is required during planning, before implementation, and before merge.
+- If an amendment is made, the `Last Amended` date MUST be updated to the current date.
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
-
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0.0 | **Ratified**: 2026-04-14 | **Last Amended**: 2026-04-14
