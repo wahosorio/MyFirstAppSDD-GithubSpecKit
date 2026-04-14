@@ -5,6 +5,7 @@
 @attribute [Authorize]
 @inject IDashboardService DashboardService
 @inject INotificationService NotificationService
+@inject IDocumentService DocumentService
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
 <PageTitle>Dashboard - ContosoDashboard</PageTitle>
@@ -50,6 +51,33 @@
                         <h5 class="card-title">Notifications</h5>
                         <p class="card-text display-4 text-danger">@summary.UnreadNotifications</p>
                     </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (recentDocuments != null && recentDocuments.Any())
+    {
+        <div class="row mb-4">
+            <div class="col">
+                <h3>Recent Documents</h3>
+                <div class="list-group">
+                    @foreach (var document in recentDocuments)
+                    {
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>@document.Title</strong>
+                                <div class="text-muted">@document.Category • @document.UploadDate.ToString("MMM dd, yyyy")</div>
+                            </div>
+                            <div>
+                                <a class="btn btn-sm btn-outline-primary me-1" target="_blank" href="@($"/api/documents/{document.DocumentId}/download")">Download</a>
+                                @if (document.IsPreviewable)
+                                {
+                                    <a class="btn btn-sm btn-outline-secondary" target="_blank" href="@($"/api/documents/{document.DocumentId}/preview")">Preview</a>
+                                }
+                            </div>
+                        </div>
+                    }
                 </div>
             </div>
         </div>
@@ -146,9 +174,11 @@
             summary = await DashboardService.GetDashboardSummaryAsync(currentUserId);
             announcements = await DashboardService.GetActiveAnnouncementsAsync();
             recentNotifications = await NotificationService.GetUserNotificationsAsync(currentUserId);
+            recentDocuments = await DocumentService.GetRecentDocumentsAsync(currentUserId, 5);
         }
     }
 
+    private List<DocumentDto>? recentDocuments;
     private string GetRelativeTime(DateTime dateTime)
     {
         var timeSpan = DateTime.UtcNow - dateTime;
