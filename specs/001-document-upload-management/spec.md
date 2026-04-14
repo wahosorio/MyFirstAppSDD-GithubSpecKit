@@ -5,6 +5,12 @@
 **Status**: Draft  
 **Input**: User description: "Add document upload and management capabilities"
 
+## Clarifications
+
+### Session 2026-04-14
+
+- Q: Should a document shared with a user grant that recipient explicit access even if they are not already a member of the associated project? → A: Yes, sharing gives explicit access to the recipient regardless of project membership.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Upload and organize documents (Priority: P1)
@@ -87,7 +93,7 @@ A document owner or project manager needs to update metadata, replace a file, de
 - **FR-018**: System MUST allow document owners to replace a document file while preserving metadata and access controls.
 - **FR-019**: System MUST allow users to delete documents they uploaded.
 - **FR-020**: System MUST allow project managers to delete any document associated with their projects.
-- **FR-021**: System MUST allow document owners to share documents with specific users or teams.
+- **FR-021**: System MUST allow document owners to share documents with specific users or teams, granting recipients explicit access even if they are not already project members.
 - **FR-022**: System MUST notify recipients when a document is shared with them via in-app notification.
 - **FR-023**: System MUST show a "Shared with Me" section for documents explicitly shared with the user.
 - **FR-024**: System MUST allow users to view project-specific documents when looking at a project.
