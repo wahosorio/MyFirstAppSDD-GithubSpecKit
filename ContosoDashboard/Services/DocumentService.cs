@@ -8,6 +8,8 @@ public interface IDocumentService
 {
     Task<DocumentDto> CreateDocumentAsync(DocumentUploadRequest request);
     Task<List<DocumentDto>> GetDocumentsForUserAsync(int userId, DocumentQueryParameters query);
+    Task<List<DocumentDto>> GetSharedDocumentsAsync(int userId, DocumentQueryParameters query);
+    Task<List<DocumentDto>> GetDocumentsForProjectAsync(int projectId, int userId, DocumentQueryParameters query);
     Task<List<DocumentDto>> GetRecentDocumentsAsync(int userId, int count = 5);
     Task<Document?> GetDocumentByIdAsync(int documentId);
     Task<bool> UserHasAccessAsync(int documentId, int userId);
@@ -120,6 +122,64 @@ public class DocumentService : IDocumentService
             .Include(d => d.Uploader)
             .OrderByDescending(d => d.UploadDate);
 
+        documents = ApplyQueryFilters(documents, query);
+
+        var documentPage = await documents
+            .Skip((query.PageNumber - 1) * query.PageSize)
+            .Take(query.PageSize)
+            .ToListAsync();
+
+        return documentPage.Select(MapToDto).ToList();
+    }
+
+    public async Task<List<DocumentDto>> GetSharedDocumentsAsync(int userId, DocumentQueryParameters query)
+    {
+        IQueryable<Document> documents = _context.Documents
+            .Include(d => d.Project)
+            .Include(d => d.Uploader)
+            .Where(d => d.Shares.Any(s => s.RecipientUserId == userId) ||
+                        (d.ProjectId != null && d.Project.ProjectMembers.Any(pm => pm.UserId == userId)))
+            .OrderByDescending(d => d.UploadDate);
+
+        documents = ApplyQueryFilters(documents, query);
+
+        var documentPage = await documents
+            .Skip((query.PageNumber - 1) * query.PageSize)
+            .Take(query.PageSize)
+            .ToListAsync();
+
+        return documentPage.Select(d => MapToDto(d, d.Shares.Any(s => s.RecipientUserId == userId))).ToList();
+    }
+
+    public async Task<List<DocumentDto>> GetDocumentsForProjectAsync(int projectId, int userId, DocumentQueryParameters query)
+    {
+        var hasAccess = await _context.Projects
+            .AnyAsync(p => p.ProjectId == projectId &&
+                           (p.ProjectManagerId == userId || p.ProjectMembers.Any(pm => pm.UserId == userId)));
+
+        if (!hasAccess)
+        {
+            return new List<DocumentDto>();
+        }
+
+        IQueryable<Document> documents = _context.Documents
+            .Where(d => d.ProjectId == projectId)
+            .Include(d => d.Project)
+            .Include(d => d.Uploader)
+            .OrderByDescending(d => d.UploadDate);
+
+        documents = ApplyQueryFilters(documents, query);
+
+        var documentPage = await documents
+            .Skip((query.PageNumber - 1) * query.PageSize)
+            .Take(query.PageSize)
+            .ToListAsync();
+
+        return documentPage.Select(MapToDto).ToList();
+    }
+
+    private IQueryable<Document> ApplyQueryFilters(IQueryable<Document> documents, DocumentQueryParameters query)
+    {
         if (!string.IsNullOrWhiteSpace(query.SearchText))
         {
             var searchText = query.SearchText.Trim().ToLower();
@@ -151,11 +211,7 @@ public class DocumentService : IDocumentService
             documents = documents.Where(d => d.UploadDate <= query.CreatedTo.Value);
         }
 
-        return await documents
-            .Skip((query.PageNumber - 1) * query.PageSize)
-            .Take(query.PageSize)
-            .Select(d => MapToDto(d))
-            .ToListAsync();
+        return documents;
     }
 
     public async Task<List<DocumentDto>> GetRecentDocumentsAsync(int userId, int count = 5)
@@ -218,5 +274,12 @@ public class DocumentService : IDocumentService
             OriginalFileName = document.OriginalFileName,
             IsSharedWithMe = false
         };
+    }
+
+    private static DocumentDto MapToDto(Document document, bool isSharedWithMe)
+    {
+        var dto = MapToDto(document);
+        dto.IsSharedWithMe = isSharedWithMe;
+        return dto;
     }
 }

@@ -1,4 +1,4 @@
-@page "/documents"
+@page "/documents/shared"
 @using ContosoDashboard.Services
 @using ContosoDashboard.Models
 @using Microsoft.AspNetCore.Authorization
@@ -7,14 +7,14 @@
 @inject IProjectService ProjectService
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
-<PageTitle>My Documents - ContosoDashboard</PageTitle>
+<PageTitle>Shared Documents - ContosoDashboard</PageTitle>
 
 <div class="container-fluid">
     <div class="row mb-4">
         <div class="col d-flex justify-content-between align-items-center">
             <div>
-                <h1>My Documents</h1>
-                <p class="text-muted">Review your uploaded documents and access them securely.</p>
+                <h1>Shared Documents</h1>
+                <p class="text-muted">Browse documents shared with you or accessible through your projects.</p>
             </div>
             <a href="/documents/upload" class="btn btn-primary">Upload Document</a>
         </div>
@@ -70,49 +70,54 @@
     }
     else if (!documents.Any())
     {
-        <div class="alert alert-info">No documents were found. Adjust your filters or upload a new document.</div>
-    }
+        <div class="alert alert-info">No shared documents found. Adjust your filters or ask a teammate to share a document
+            with you.</div>
+        }
     else
-    {
-        <div class="table-responsive">
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th>Title</th>
-                        <th>Category</th>
-                        <th>Project</th>
-                        <th>Uploaded</th>
-                        <th>Size</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var document in documents)
-                    {
+        {
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
                         <tr>
-                            <td>@document.Title</td>
-                            <td>@document.Category</td>
-                            <td>@(document.ProjectName ?? "Personal")</td>
-                            <td>@document.UploadDate.ToString("MMM dd, yyyy")</td>
-                            <td>@String.Format("{0:N0}", document.FileSize) bytes</td>
-                            <td>@document.ScanStatus</td>
-                            <td>
-                                <a class="btn btn-sm btn-outline-primary me-1" target="_blank"
-                                   href="@($"/api/documents/{document.DocumentId}/download")">Download</a>
-                                @if (document.IsPreviewable)
-                                {
-                                    <a class="btn btn-sm btn-outline-secondary" target="_blank"
-                                       href="@($"/api/documents/{document.DocumentId}/preview")">Preview</a>
-                                }
-                            </td>
+                            <th>Title</th>
+                            <th>Category</th>
+                            <th>Project</th>
+                            <th>Owner</th>
+                            <th>Uploaded</th>
+                            <th>Actions</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-    }
-</div>
+                    </thead>
+                    <tbody>
+                        @foreach (var document in documents)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@document.Title</strong>
+                                    @if (document.IsSharedWithMe)
+                                    {
+                                        <div><small class="text-muted">Shared with you</small></div>
+                                    }
+                                </td>
+                                <td>@document.Category</td>
+                                <td>@(document.ProjectName ?? "Personal")</td>
+                                <td>@document.UploadedByName</td>
+                                <td>@document.UploadDate.ToString("MMM dd, yyyy")</td>
+                                <td>
+                                    <a class="btn btn-sm btn-outline-primary me-1" target="_blank"
+                                       href="@($"/api/documents/{document.DocumentId}/download")">Download</a>
+                                    @if (document.IsPreviewable)
+                                    {
+                                        <a class="btn btn-sm btn-outline-secondary" target="_blank"
+                                           href="@($"/api/documents/{document.DocumentId}/preview")">Preview</a>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
 
 @code {
     private List<DocumentDto>? documents;
@@ -152,7 +157,7 @@
             PageNumber = 1
         };
 
-        documents = await DocumentService.GetDocumentsForUserAsync(currentUserId, query);
+        documents = await DocumentService.GetSharedDocumentsAsync(currentUserId, query);
     }
 
     private async Task ApplyFilters()
